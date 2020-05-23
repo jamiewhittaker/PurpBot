@@ -41,16 +41,16 @@ class FunCog(commands.Cog):
             topResult = resp.json()[1][0]
             topResultLink = resp.json()[3][0]
 
-            resp2 = requests.get('https://oldschool.runescape.wiki/api.php?action=query&exlimit=1&explaintext=1&exsentences=3&format=json&formatversion=2&prop=extracts&titles=' + topResult)
+            resp2 = requests.get('https://oldschool.runescape.wiki/api.php?action=query&exlimit=1&explaintext=1&exintro=1&format=json&formatversion=2&prop=extracts&titles=' + topResult)
 
             if resp2.ok:
                 result = resp2.json()
                 extract = result['query']['pages'][0]['extract']
 
                 if not extract:
-                    await ctx.send(f"Showing results for: {topResult}\nRead here: {topResultLink}")
+                    await ctx.send(content=f"Showing result for: {topResult}\nRead here: <{topResultLink}>")
                 else:
-                    await ctx.send(f"Showing results for: {topResult} ```{extract}```Read more here: {topResultLink}")
+                    await ctx.send(f"Showing result for: {topResult} ```{extract}```Read more here: <{topResultLink}>")
 
 
 
