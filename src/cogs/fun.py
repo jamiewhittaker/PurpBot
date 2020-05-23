@@ -28,6 +28,32 @@ class FunCog(commands.Cog):
             await ctx.send("Invalid parameter, must be a digit greater than 0.")
 
 
+    @commands.command(name='osrs-wiki', help='Searches OSRS Wiki for the given term.')
+    async def getOSRSWiki(self, ctx, *args):
+        import requests
+        import json
+
+        searchTermFixed = " ".join(args[:])
+        searchTermFixed.replace(" ", "_")
+        resp = requests.get('https://oldschool.runescape.wiki/api.php?action=opensearch&search=' + searchTermFixed)
+
+        if resp.ok:
+            topResult = resp.json()[1][0]
+            topResultLink = resp.json()[3][0]
+
+            resp2 = requests.get('https://oldschool.runescape.wiki/api.php?action=query&exlimit=1&explaintext=1&exsentences=3&format=json&formatversion=2&prop=extracts&titles=' + topResult)
+
+            if resp2.ok:
+                result = resp2.json()
+                extract = result['query']['pages'][0]['extract']
+
+                if not extract:
+                    await ctx.send(f"Showing results for: {topResult}\nRead here: {topResultLink}")
+                else:
+                    await ctx.send(f"Showing results for: {topResult} ```{extract}```Read more here: {topResultLink}")
+
+
+
     @commands.command(name='osrs-stats', help='Gets OSRS Hi-Score data for the given user.')
     async def getOSRS(self, ctx, username):
         import requests
@@ -172,7 +198,6 @@ class FunCog(commands.Cog):
 
         else:
             await ctx.send(f"Could not find {username} in the Hi-Scores.")
-
 
 
 
