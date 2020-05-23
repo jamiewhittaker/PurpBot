@@ -33,6 +33,7 @@ class FunCog(commands.Cog):
         import requests
 
         resp = requests.get('https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=' + username)
+
         if resp.ok:
             Overall, Attack, Defence, Strength, Hitpoints, Ranged, Prayer, Magic, Cooking, Woodcutting, Fletching, Fishing, Firemaking, Crafting, Smithing, Mining, Herblore, Agility, Thieving, Slayer, Farming, Runecrafting, Hunter, Construction, *extraWords = resp.text.split("\n")
 
@@ -168,6 +169,9 @@ class FunCog(commands.Cog):
                 output = output + f"\n{skill_name}: {level} [{experience} XP]"
 
             await ctx.send(f"Displaying stats for {username}: \n```{output}```")
+
+        else:
+            await ctx.send(f"Could not find {username} in the Hi-Scores.")
 
 
 
