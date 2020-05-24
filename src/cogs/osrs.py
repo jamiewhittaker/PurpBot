@@ -39,152 +39,180 @@ class OSRS(commands.Cog):
 
 
     @commands.command(name='osrs-stats', help='Gets OSRS Hi-Score data for the given user.')
-    async def getOSRS(self, ctx, username):
-        import requests
+    async def getOSRS(self, ctx, *args):
 
-        resp = requests.get('https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=' + username)
+        parameters = " ".join(args[:]).split(",")
+        usernames = []
+        for parameter in parameters:
+            usernames.append(parameter.strip())
 
-        if resp.ok:
-            Overall, Attack, Defence, Strength, Hitpoints, Ranged, Prayer, Magic, Cooking, Woodcutting, Fletching, Fishing, Firemaking, Crafting, Smithing, Mining, Herblore, Agility, Thieving, Slayer, Farming, Runecrafting, Hunter, Construction, *extraWords = resp.text.split("\n")
+        if len(usernames) > 2:
+            await ctx.send("This command currently only accepts two parameters.")
+            raise Exception("User tried to use more than two parameters")
 
-            skills = {
-                "Overall" : {
-                    "Rank": Overall.split(",")[0],
-                    "Level": Overall.split(",")[1],
-                    "Experience": Overall.split(",")[2]
-                },
-                "Attack" : {
-                    "Rank": Attack.split(",")[0],
-                    "Level": Attack.split(",")[1],
-                    "Experience": Attack.split(",")[2]
-                },
-                "Defence" : {
-                    "Rank": Defence.split(",")[0],
-                    "Level": Defence.split(",")[1],
-                    "Experience": Defence.split(",")[2]
-                },
-                "Strength" : {
-                    "Rank": Strength.split(",")[0],
-                    "Level": Strength.split(",")[1],
-                    "Experience": Strength.split(",")[2]
-                },
-                "Hitpoints" : {
-                    "Rank": Hitpoints.split(",")[0],
-                    "Level": Hitpoints.split(",")[1],
-                    "Experience": Hitpoints.split(",")[2]
-                },
-                "Ranged" : {
-                    "Rank": Ranged.split(",")[0],
-                    "Level": Ranged.split(",")[1],
-                    "Experience": Ranged.split(",")[2]
-                },
-                "Prayer" : {
-                    "Rank": Prayer.split(",")[0],
-                    "Level": Prayer.split(",")[1],
-                    "Experience": Prayer.split(",")[2]
-                },
-                "Magic" : {
-                    "Rank": Magic.split(",")[0],
-                    "Level": Magic.split(",")[1],
-                    "Experience": Magic.split(",")[2]
-                },
-                "Cooking" : {
-                    "Rank": Cooking.split(",")[0],
-                    "Level": Cooking.split(",")[1],
-                    "Experience": Cooking.split(",")[2]
-                },
-                "Woodcutting" : {
-                    "Rank": Woodcutting.split(",")[0],
-                    "Level": Woodcutting.split(",")[1],
-                    "Experience": Woodcutting.split(",")[2]
-                },
-                "Fletching" : {
-                    "Rank": Fletching.split(",")[0],
-                    "Level": Fletching.split(",")[1],
-                    "Experience": Fletching.split(",")[2]
-                },
-                "Fishing" : {
-                    "Rank": Fishing.split(",")[0],
-                    "Level": Fishing.split(",")[1],
-                    "Experience": Fishing.split(",")[2]
-                },
-                "Firemaking" : {
-                    "Rank": Firemaking.split(",")[0],
-                    "Level": Firemaking.split(",")[1],
-                    "Experience": Firemaking.split(",")[2]
-                },
-                "Crafting" : {
-                    "Rank": Crafting.split(",")[0],
-                    "Level": Crafting.split(",")[1],
-                    "Experience": Crafting.split(",")[2]
-                },
-                "Smithing" : {
-                    "Rank": Smithing.split(",")[0],
-                    "Level": Smithing.split(",")[1],
-                    "Experience": Smithing.split(",")[2]
-                },
-                "Mining" : {
-                    "Rank": Mining.split(",")[0],
-                    "Level": Mining.split(",")[1],
-                    "Experience": Mining.split(",")[2]
-                },
-                "Herblore" : {
-                    "Rank": Herblore.split(",")[0],
-                    "Level": Herblore.split(",")[1],
-                    "Experience": Herblore.split(",")[2]
-                },
-                "Agility" : {
-                    "Rank": Agility.split(",")[0],
-                    "Level": Agility.split(",")[1],
-                    "Experience": Agility.split(",")[2]
-                },
-                "Thieving" : {
-                    "Rank": Thieving.split(",")[0],
-                    "Level": Thieving.split(",")[1],
-                    "Experience": Thieving.split(",")[2]
-                },
-                "Slayer" : {
-                    "Rank": Slayer.split(",")[0],
-                    "Level": Slayer.split(",")[1],
-                    "Experience": Slayer.split(",")[2]
-                },
-                "Farming" : {
-                    "Rank": Farming.split(",")[0],
-                    "Level": Farming.split(",")[1],
-                    "Experience": Farming.split(",")[2]
-                },
-                "Runecrafting" : {
-                    "Rank": Runecrafting.split(",")[0],
-                    "Level": Runecrafting.split(",")[1],
-                    "Experience": Runecrafting.split(",")[2]
-                },
-                "Hunter" : {
-                    "Rank": Hunter.split(",")[0],
-                    "Level": Hunter.split(",")[1],
-                    "Experience": Hunter.split(",")[2]
-                },
-                "Construction" : {
-                    "Rank": Construction.split(",")[0],
-                    "Level": Construction.split(",")[1],
-                    "Experience": Construction.split(",")[2]
-                }
+        for username in usernames:
+            if getOSRS(username) == False:
+                await ctx.send(f"Could not find {username} in the Hi-Scores")
+
+        def getOutput(username):
+            skills = getOSRS(username)
+
+            if skills:
+                output = ""
+                for skill_name, skill_info in skills.items():
+                    level = skill_info["Level"]
+                    rank = skill_info["Rank"]
+                    experience = skill_info["Experience"]
+                    output = output + f"\n**{skill_name}**: {level} [{experience} XP]"
+                embed.add_field(name=f"{username}", value=output, inline=True)
+
+        if len(usernames) == 1:
+            embed = discord.Embed(title=f"Stats for {usernames[0]}", description="Stats fetched from OSRS Hi-Scores.", color=0xC0A886)
+            getOutput(usernames[0])
+        elif len(usernames) == 2:
+            embed = discord.Embed(title=f"Stats for {usernames[0]} and {usernames[1]}", description="Stats fetched from OSRS Hi-Scores.", color=0xC0A886)
+            getOutput(usernames[0])
+            getOutput(usernames[1])
+
+        await ctx.send(embed=embed)
+
+
+
+
+
+def getOSRS(username):
+    import requests
+
+    resp = requests.get('https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=' + username)
+
+    if resp.ok:
+        Overall, Attack, Defence, Strength, Hitpoints, Ranged, Prayer, Magic, Cooking, Woodcutting, Fletching, Fishing, Firemaking, Crafting, Smithing, Mining, Herblore, Agility, Thieving, Slayer, Farming, Runecrafting, Hunter, Construction, *extraWords = resp.text.split("\n")
+
+        skills = {
+            "Overall" : {
+                "Rank": Overall.split(",")[0],
+                "Level": Overall.split(",")[1],
+                "Experience": Overall.split(",")[2]
+            },
+            "Attack" : {
+                "Rank": Attack.split(",")[0],
+                "Level": Attack.split(",")[1],
+                "Experience": Attack.split(",")[2]
+            },
+            "Defence" : {
+                "Rank": Defence.split(",")[0],
+                "Level": Defence.split(",")[1],
+                "Experience": Defence.split(",")[2]
+            },
+            "Strength" : {
+                "Rank": Strength.split(",")[0],
+                "Level": Strength.split(",")[1],
+                "Experience": Strength.split(",")[2]
+            },
+            "Hitpoints" : {
+                "Rank": Hitpoints.split(",")[0],
+                "Level": Hitpoints.split(",")[1],
+                "Experience": Hitpoints.split(",")[2]
+            },
+            "Ranged" : {
+                "Rank": Ranged.split(",")[0],
+                "Level": Ranged.split(",")[1],
+                "Experience": Ranged.split(",")[2]
+            },
+            "Prayer" : {
+                "Rank": Prayer.split(",")[0],
+                "Level": Prayer.split(",")[1],
+                "Experience": Prayer.split(",")[2]
+            },
+            "Magic" : {
+                "Rank": Magic.split(",")[0],
+                "Level": Magic.split(",")[1],
+                "Experience": Magic.split(",")[2]
+            },
+            "Cooking" : {
+                "Rank": Cooking.split(",")[0],
+                "Level": Cooking.split(",")[1],
+                "Experience": Cooking.split(",")[2]
+            },
+            "Woodcutting" : {
+                "Rank": Woodcutting.split(",")[0],
+                "Level": Woodcutting.split(",")[1],
+                "Experience": Woodcutting.split(",")[2]
+            },
+            "Fletching" : {
+                "Rank": Fletching.split(",")[0],
+                "Level": Fletching.split(",")[1],
+                "Experience": Fletching.split(",")[2]
+            },
+            "Fishing" : {
+                "Rank": Fishing.split(",")[0],
+                "Level": Fishing.split(",")[1],
+                "Experience": Fishing.split(",")[2]
+            },
+            "Firemaking" : {
+                "Rank": Firemaking.split(",")[0],
+                "Level": Firemaking.split(",")[1],
+                "Experience": Firemaking.split(",")[2]
+            },
+            "Crafting" : {
+                "Rank": Crafting.split(",")[0],
+                "Level": Crafting.split(",")[1],
+                "Experience": Crafting.split(",")[2]
+            },
+            "Smithing" : {
+                "Rank": Smithing.split(",")[0],
+                "Level": Smithing.split(",")[1],
+                "Experience": Smithing.split(",")[2]
+            },
+            "Mining" : {
+                "Rank": Mining.split(",")[0],
+                "Level": Mining.split(",")[1],
+                "Experience": Mining.split(",")[2]
+            },
+            "Herblore" : {
+                "Rank": Herblore.split(",")[0],
+                "Level": Herblore.split(",")[1],
+                "Experience": Herblore.split(",")[2]
+            },
+            "Agility" : {
+                "Rank": Agility.split(",")[0],
+                "Level": Agility.split(",")[1],
+                "Experience": Agility.split(",")[2]
+            },
+            "Thieving" : {
+                "Rank": Thieving.split(",")[0],
+                "Level": Thieving.split(",")[1],
+                "Experience": Thieving.split(",")[2]
+            },
+            "Slayer" : {
+                "Rank": Slayer.split(",")[0],
+                "Level": Slayer.split(",")[1],
+                "Experience": Slayer.split(",")[2]
+            },
+            "Farming" : {
+                "Rank": Farming.split(",")[0],
+                "Level": Farming.split(",")[1],
+                "Experience": Farming.split(",")[2]
+            },
+            "Runecrafting" : {
+                "Rank": Runecrafting.split(",")[0],
+                "Level": Runecrafting.split(",")[1],
+                "Experience": Runecrafting.split(",")[2]
+            },
+            "Hunter" : {
+                "Rank": Hunter.split(",")[0],
+                "Level": Hunter.split(",")[1],
+                "Experience": Hunter.split(",")[2]
+            },
+            "Construction" : {
+                "Rank": Construction.split(",")[0],
+                "Level": Construction.split(",")[1],
+                "Experience": Construction.split(",")[2]
             }
-
-            output = ""
-
-            for skill_name, skill_info in skills.items():
-                level = skill_info["Level"]
-                rank = skill_info["Rank"]
-                experience = skill_info["Experience"]
-                output = output + f"\n**{skill_name}**: {level} [{experience} XP]"
-
-            embed = discord.Embed(title=f"Stats for {username}", description="Stats fetched from OSRS Hi-Scores.", color=0xC0A886)
-            embed.add_field(name="Stats", value=output, inline=False)
-            await ctx.send(embed=embed)
-
-        else:
-            await ctx.send(f"Could not find {username} in the Hi-Scores.")
-
+        }
+        return skills
+    else:
+        return False
 
 def setup(bot):
     bot.add_cog(OSRS(bot))
