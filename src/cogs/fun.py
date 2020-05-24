@@ -50,7 +50,11 @@ class FunCog(commands.Cog):
                 if not extract:
                     await ctx.send(content=f"Showing result for: {topResult}\nRead here: <{topResultLink}>")
                 else:
-                    await ctx.send(f"Showing result for: {topResult} ```{extract}```Read more here: <{topResultLink}>")
+                    embed = discord.Embed(title=f"OSRS Wiki entry for {topResult}", color=0x00ff00)
+                    embed.set_thumbnail(url="https://oldschool.runescape.wiki/images/thumb/c/c3/Wiki_Integration_%281%29.png/200px-Wiki_Integration_%281%29.png?d07a4")
+                    embed.add_field(name="Summary", value=extract[:1024], inline=False)
+                    embed.add_field(name="Read more:", value=str(topResultLink), inline=False)
+                    await ctx.send(embed=embed)
 
 
 
@@ -194,7 +198,9 @@ class FunCog(commands.Cog):
                 experience = skill_info["Experience"]
                 output = output + f"\n{skill_name}: {level} [{experience} XP]"
 
-            await ctx.send(f"Displaying stats for {username}: \n```{output}```")
+            embed = discord.Embed(title=f"Stats for {username}", description="Stats fetched from OSRS Hi-Scores.", color=0x00ff00)
+            embed.add_field(name="Stats", value=output, inline=False)
+            await ctx.send(embed=embed)
 
         else:
             await ctx.send(f"Could not find {username} in the Hi-Scores.")
