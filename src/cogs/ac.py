@@ -23,15 +23,36 @@ class AC(commands.Cog):
             birthdays = []
             for villager in result.values():
                 if villager["birthday"] == date:
-                    birthdays.append(villager["name"]["name-USen"])
+                    birthdays.append(villager["id"])
 
-            formattedDate = now.strftime("%d/%m/%Y")
-            output = f"The following villagers have birthdays today: ({formattedDate})\n```"
-            for name in birthdays:
-                output = f"{output}* {name}\n"
+            for villager in birthdays:
+                embed = getVillagerEmbed(villager)
+                await ctx.send(embed=embed)
 
-            output = output + "```"
-            await ctx.send(output)
+
+def getVillagerEmbed(id):
+    import requests
+    import json
+
+    resp = requests.get('http://acnhapi.com/v1/villagers/' + str(id))
+    if resp.ok:
+        name = resp.json()["name"]["name-USen"]
+        personality = resp.json()["personality"]
+        birthdayString = resp.json()["birthday-string"]
+        species = resp.json()["species"]
+        gender = resp.json()["gender"]
+        catchphrase = resp.json()["catch-phrase"]
+        image = 'http://acnhapi.com/v1/images/villagers/' + str(id)
+
+        embed = discord.Embed(title=name, color=0xA7D2A4)
+        embed.set_thumbnail(url=image)
+        embed.add_field(name="Personality", value=personality, inline=False)
+        embed.add_field(name="Birthday", value=birthdayString, inline=True)
+        embed.add_field(name="Species", value=species, inline=True)
+        embed.add_field(name="Gender", value=gender, inline=True)
+        embed.add_field(name="Catchphrase", value=catchphrase, inline=True)
+
+        return embed
 
 
 def setup(bot):
