@@ -33,30 +33,32 @@ class FunCog(commands.Cog):
         import random
 
         oneString = ""
-        for x in range(0, 20):
+        for x in range(0, 14):
             randomNum = random.randint(1, 100)
 
             if randomNum <= 65:
-                oneString = oneString + "0  -  "
+                oneString = oneString + "0\t—\t"
             if randomNum > 65 and randomNum <= 85:
-                oneString = oneString + "1  -  "
+                oneString = oneString + "1\t—\t"
             if randomNum > 85 and randomNum <= 95:
-                oneString = oneString + "X  -  "
+                oneString = oneString + "X\t—\t"
 
             if randomNum >= 95:
                 randomFret = random.randint(2, 24)
-                if oneString[-4] == "1":
-                    oneString = oneString + "0  -  "
-                    oneString = oneString + f"{randomFret}  -  "
+                if oneString:
+                    if oneString[-4] == "1":
+                        oneString = oneString + "0\t—\t"
+                        oneString = oneString + f"{randomFret}\t—\t"
+                    else:
+                        oneString = oneString + f"{randomFret}\t—\t"
                 else:
-                    oneString = oneString + f"{randomFret}  -  "
+                    oneString = oneString + f"{randomFret}\t—\t"
 
         oneString = oneString[:-3]
 
-        randomString = random.randint(1, 100)
-        emptyString = ("—" * 32) + "\n"
-
+        emptyString = ("—\t" * 24) + "\n"
         output = ""
+        randomString = random.randint(1, 100)
 
         if randomString <= 90:
             for x in range(0, 5):
@@ -69,14 +71,12 @@ class FunCog(commands.Cog):
             output = output + oneString
             output = output + f"\n{emptyString}"
 
-
         bpm = random.randint(80, 200)
-        tuning = ["Drop D","Drop C#","Drop B","Drop A#","Drop F","Drop F#","Drop G"]
-        randomTuning = random.choice(tuning)
+        randomTuning = random.choice(["Drop D","Drop C#","Drop B","Drop A#","Drop F","Drop F#","Drop G"])
 
-
-        embed = discord.Embed(title=f"Your random Djent tab", color=0xC0A886)
-        embed.add_field(name=f"{bpm}bpm, {randomTuning}", value=output, inline=False)
+        embed = discord.Embed(title=f"Your random Djent tab", color=0xff0000)
+        embed.set_thumbnail(url="https://cdn.playlists.net/images/playlists/image/medium/82282.jpg")
+        embed.add_field(name=f"{bpm}bpm, {randomTuning}", value=output, inline=True)
         await ctx.send(embed=embed)
 
 
