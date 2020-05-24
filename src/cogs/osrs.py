@@ -30,7 +30,7 @@ class OSRS(commands.Cog):
                     if len(extract) > 1021:
                         extract = (extract[:1021] + '...')
 
-                    embed = discord.Embed(title=f"OSRS Wiki entry for {topResult}", url=topResultLink, color=0xC0A886)
+                    embed = discord.Embed(title=f"{topResult}", url=topResultLink, color=0xC0A886)
                     embed.set_thumbnail(url="https://oldschool.runescape.wiki/images/thumb/c/c3/Wiki_Integration_%281%29.png/200px-Wiki_Integration_%281%29.png?d07a4")
                     embed.add_field(name="Summary", value=extract, inline=False)
                     embed.add_field(name="Read more:", value=str(topResultLink), inline=False)
@@ -39,18 +39,16 @@ class OSRS(commands.Cog):
 
 
     @commands.command(name='osrs-stats', help='Gets OSRS Hi-Score data for the given user.')
-    async def getOSRS(self, ctx, *args):
+    async def getOSRSStats(self, ctx, *args):
 
         parameters = " ".join(args[:]).split(",")
         usernames = []
         for parameter in parameters:
             usernames.append(parameter.strip())
 
-        if not usernames[0].strip():
+        if not usernames[0]:
             await ctx.send(f"This command requires parameters. See correct usages below.\n`!osrs-stats Zezima` or `!osrs-stats Zezima, Lynx Titan`")
             raise Exception("User passed no parameters")
-
-
 
         if len(usernames) > 2:
             await ctx.send("This command currently only accepts two parameters.")
@@ -59,6 +57,8 @@ class OSRS(commands.Cog):
         for username in usernames:
             if getOSRS(username) == False:
                 await ctx.send(f"Could not find {username} in the Hi-Scores")
+                raise Exception("User searched for invalid username")
+
 
         def getOutput(username):
             skills = getOSRS(username)
@@ -86,11 +86,8 @@ class OSRS(commands.Cog):
 
 
 
-
-
 def getOSRS(username):
     import requests
-
     resp = requests.get('https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=' + username)
 
     if resp.ok:
