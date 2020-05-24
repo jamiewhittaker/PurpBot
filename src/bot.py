@@ -10,7 +10,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 
-initial_extensions = ['cogs.fun','cogs.osrs']
+initial_extensions = ['cogs.fun','cogs.osrs','cogs.ac']
 
 bot = commands.Bot(command_prefix="!")
 
