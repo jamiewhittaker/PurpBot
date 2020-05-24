@@ -5,6 +5,34 @@ class OSRS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(name='osrs-itemID', help='Returns the Item ID for the item searched')
+    async def getOSRSItemID(self, ctx, *args):
+        searchTerm = " ".join(args[:])
+        itemID = getItemID(searchTerm)
+        await ctx.send(itemID)
+
+
+    @commands.command(name='osrs-pc', help='Returns the current Grand Exchange price for the item searched')
+    async def getOSRSGEPrice(self, ctx, *args):
+        import requests
+        import json
+
+        searchTerm = " ".join(args[:])
+        itemID = getItemID(searchTerm)
+
+        resp = requests.get('http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item=' + str(itemID))
+
+        if resp.ok:
+            currentPrice = resp.json()["item"]["current"]["price"]
+            print(f"{currentPrice}")
+
+
+
+
+
+
+
+
     @commands.command(name='osrs-wiki', help='Searches OSRS Wiki for the given term.')
     async def getOSRSWiki(self, ctx, *args):
         import requests
@@ -218,6 +246,18 @@ def getOSRS(username):
         return skills
     else:
         return False
+
+
+def getItemID(searchTerm):
+    import json
+
+    with open('items-summary.json') as f:
+        data = json.load(f)
+
+    for item in data.values():
+        if item["name"].lower() == searchTerm.lower():
+            return item["id"]
+
 
 def setup(bot):
     bot.add_cog(OSRS(bot))
