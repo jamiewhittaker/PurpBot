@@ -28,7 +28,57 @@ class FunCog(commands.Cog):
             await ctx.send("Invalid parameter, must be a digit greater than 0.")
 
 
-    
+    @commands.command(name='djenerate', help='Generates a random Djent guitar tab.')
+    async def generateDjent(self, ctx):
+        import random
+
+        oneString = ""
+        for x in range(0, 20):
+            randomNum = random.randint(1, 100)
+
+            if randomNum <= 65:
+                oneString = oneString + "0  -  "
+            if randomNum > 65 and randomNum <= 85:
+                oneString = oneString + "1  -  "
+            if randomNum > 85 and randomNum <= 95:
+                oneString = oneString + "X  -  "
+
+            if randomNum >= 95:
+                randomFret = random.randint(2, 24)
+                if oneString[-4] == "1":
+                    oneString = oneString + "0  -  "
+                    oneString = oneString + f"{randomFret}  -  "
+                else:
+                    oneString = oneString + f"{randomFret}  -  "
+
+        oneString = oneString[:-3]
+
+        randomString = random.randint(1, 100)
+        emptyString = ("—" * 32) + "\n"
+
+        output = ""
+
+        if randomString <= 90:
+            for x in range(0, 5):
+                output = output + emptyString
+            output = output + oneString
+
+        if randomString > 90:
+            for x in range(0, 4):
+                output = output + emptyString
+            output = output + oneString
+            output = output + f"\n{emptyString}"
+
+
+        bpm = random.randint(80, 200)
+        tuning = ["Drop D","Drop C#","Drop B","Drop A#","Drop F","Drop F#","Drop G"]
+        randomTuning = random.choice(tuning)
+
+
+        embed = discord.Embed(title=f"Your random Djent tab", color=0xC0A886)
+        embed.add_field(name=f"{bpm}bpm, {randomTuning}", value=output, inline=False)
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(FunCog(bot))

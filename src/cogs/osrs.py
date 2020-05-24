@@ -30,7 +30,7 @@ class OSRS(commands.Cog):
                     if len(extract) > 1021:
                         extract = (extract[:1021] + '...')
 
-                    embed = discord.Embed(title=f"OSRS Wiki entry for {topResult}", color=0xC0A886)
+                    embed = discord.Embed(title=f"OSRS Wiki entry for {topResult}", url=topResultLink, color=0xC0A886)
                     embed.set_thumbnail(url="https://oldschool.runescape.wiki/images/thumb/c/c3/Wiki_Integration_%281%29.png/200px-Wiki_Integration_%281%29.png?d07a4")
                     embed.add_field(name="Summary", value=extract, inline=False)
                     embed.add_field(name="Read more:", value=str(topResultLink), inline=False)
