@@ -79,12 +79,13 @@ class OSRS(commands.Cog):
                 if not extract:
                     await ctx.send(content=f"Showing result for: {topResult}\nRead here: <{topResultLink}>")
                 else:
+                    extract = extract.splitlines()[0]
                     if len(extract) > 1021:
                         extract = (extract[:1021] + '...')
 
                     embed = discord.Embed(title=f"{topResult}", url=topResultLink, color=0xC0A886)
                     embed.set_thumbnail(url="https://oldschool.runescape.wiki/images/thumb/c/c3/Wiki_Integration_%281%29.png/200px-Wiki_Integration_%281%29.png?d07a4")
-                    embed.add_field(name="Summary", value=extract, inline=False)
+                    embed.add_field(name="Summary (first paragraph)", value=extract, inline=False)
                     embed.add_field(name="Read more:", value=str(topResultLink), inline=False)
                     await ctx.send(embed=embed)
 
