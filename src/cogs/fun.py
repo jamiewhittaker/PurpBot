@@ -50,9 +50,13 @@ class FunCog(commands.Cog):
                 if not extract:
                     await ctx.send(content=f"Showing result for: {topResult}\nRead here: <{topResultLink}>")
                 else:
+
+                    if len(extract) > 1021:
+                        extract = (extract[:1021] + '...')
+
                     embed = discord.Embed(title=f"OSRS Wiki entry for {topResult}", color=0x00ff00)
                     embed.set_thumbnail(url="https://oldschool.runescape.wiki/images/thumb/c/c3/Wiki_Integration_%281%29.png/200px-Wiki_Integration_%281%29.png?d07a4")
-                    embed.add_field(name="Summary", value=extract[:1024], inline=False)
+                    embed.add_field(name="Summary", value=extract, inline=False)
                     embed.add_field(name="Read more:", value=str(topResultLink), inline=False)
                     await ctx.send(embed=embed)
 
