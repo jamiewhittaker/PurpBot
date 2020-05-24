@@ -46,6 +46,12 @@ class OSRS(commands.Cog):
         for parameter in parameters:
             usernames.append(parameter.strip())
 
+        if not usernames[0].strip():
+            await ctx.send(f"This command requires parameters. See correct usages below.\n`!osrs-stats Zezima` or `!osrs-stats Zezima, Lynx Titan`")
+            raise Exception("User passed no parameters")
+
+
+
         if len(usernames) > 2:
             await ctx.send("This command currently only accepts two parameters.")
             raise Exception("User tried to use more than two parameters")
@@ -69,11 +75,13 @@ class OSRS(commands.Cog):
         if len(usernames) == 1:
             embed = discord.Embed(title=f"Stats for {usernames[0]}", description="Stats fetched from OSRS Hi-Scores.", color=0xC0A886)
             getOutput(usernames[0])
-        elif len(usernames) == 2:
+
+        if len(usernames) == 2:
             embed = discord.Embed(title=f"Stats for {usernames[0]} and {usernames[1]}", description="Stats fetched from OSRS Hi-Scores.", color=0xC0A886)
             getOutput(usernames[0])
             getOutput(usernames[1])
 
+        embed.set_thumbnail(url="https://lh3.googleusercontent.com/5Dj_vzUhLURKE7dnDElvo9lbgzaMynzT0tyyvStQUt3pSZ8Ub0jzsa05oVy4EtHjEq8=s180-rw")
         await ctx.send(embed=embed)
 
 
