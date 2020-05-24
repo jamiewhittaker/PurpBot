@@ -5,6 +5,7 @@ class OSRS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+
     @commands.command(name='osrs-itemID', help='Returns the Item ID for the item searched')
     async def getOSRSItemID(self, ctx, *args):
         searchTerm = " ".join(args[:])
@@ -20,17 +21,25 @@ class OSRS(commands.Cog):
         searchTerm = " ".join(args[:])
         itemID = getItemID(searchTerm)
 
+        if not itemID:
+            await ctx.send("Item does not exist.")
+            raise Exception(f"{searchTerm} was not found in the OSRSBox items JSON.")
+
         resp = requests.get('http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item=' + str(itemID))
 
         if resp.ok:
+            itemName = resp.json()["item"]["name"]
+            itemDesciption = resp.json()["item"]["description"]
             currentPrice = resp.json()["item"]["current"]["price"]
-            print(f"{currentPrice}")
+            icon = resp.json()["item"]["icon_large"]
 
-
-
-
-
-
+            embed = discord.Embed(title=itemName, color=0xC0A886)
+            embed.set_thumbnail(url=icon)
+            embed.add_field(name="Description", value=itemDesciption, inline=False)
+            embed.add_field(name="Current price", value=currentPrice, inline=False)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("Could not find item in the Grand Exchange.")
 
 
     @commands.command(name='osrs-wiki', help='Searches OSRS Wiki for the given term.')
@@ -257,6 +266,8 @@ def getItemID(searchTerm):
     for item in data.values():
         if item["name"].lower() == searchTerm.lower():
             return item["id"]
+
+    return False
 
 
 def setup(bot):
