@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-class misc(commands.Cog):
+class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -10,4 +10,4 @@ class misc(commands.Cog):
         await ctx.send('The GitHub link for this project is:\nhttps://github.com/jamiewhittaker/PurpBot')
 
 def setup(bot):
-    bot.add_cog(misc(bot))
+    bot.add_cog(Misc(bot))

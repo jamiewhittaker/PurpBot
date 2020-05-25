@@ -13,7 +13,7 @@ class OSRS(commands.Cog):
         await ctx.send(itemID)
 
 
-    @commands.command(name='osrs-pc', help='Returns the current Grand Exchange price for the item searched')
+    @commands.command(name='osrs-pc', help='Returns Grand Exchange information for an item')
     async def getOSRSGEPrice(self, ctx, *args):
         import requests
         import json

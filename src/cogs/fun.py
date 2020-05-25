@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-class FunCog(commands.Cog):
+class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -81,4 +81,4 @@ class FunCog(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(FunCog(bot))
+    bot.add_cog(Fun(bot))
