@@ -190,7 +190,7 @@ def getBugEmbed(id):
 
 
 def getFossilEmbed(name):
-    resp = requests.get('http://acnhapi.com/v1/fossils/' + name.replace(" ", "_"))
+    resp = requests.get('http://acnhapi.com/v1/fossils/' + name.replace(" ", "_").lower())
     if resp.ok:
         embed = discord.Embed(title=resp.json()["name"]["name-USen"], color=0xA7D2A4)
         embed.set_thumbnail(url=resp.json()["image_uri"])
