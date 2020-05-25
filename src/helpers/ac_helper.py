@@ -42,9 +42,9 @@ def getFishEmbed(id):
         embed = discord.Embed(title=resp.json()["name"]["name-USen"], color=0xA7D2A4)
         embed.set_thumbnail(url=resp.json()["icon_uri"])
 
-        embed.add_field(name="Location", value=resp.json()["availability"]["location"], inline=True)
         embed.add_field(name="Rarity", value=resp.json()["availability"]["rarity"], inline=True)
         embed.add_field(name="Price", value=resp.json()["price"], inline=True)
+        embed.add_field(name="Price (C.J.)", value=resp.json()["price-cj"], inline=True)
 
         if not resp.json()["availability"]["isAllYear"]:
             embed.add_field(name="Northern Hemisphere months", value=resp.json()["availability"]["month-northern"], inline=True)
@@ -57,7 +57,7 @@ def getFishEmbed(id):
         else:
             embed.add_field(name="Times", value="All Day", inline=True)
 
-        embed.add_field(name="Price (C.J.)", value=resp.json()["price-cj"], inline=True)
+        embed.add_field(name="Location", value=resp.json()["availability"]["location"], inline=True)
         embed.add_field(name="Catchphrase", value=resp.json()["catch-phrase"], inline=True)
         embed.add_field(name="Museum phrase", value=resp.json()["museum-phrase"], inline=False)
 
@@ -70,9 +70,10 @@ def getBugEmbed(id):
         embed = discord.Embed(title=resp.json()["name"]["name-USen"], color=0xA7D2A4)
         embed.set_thumbnail(url=resp.json()["icon_uri"])
 
-        embed.add_field(name="Location", value=resp.json()["availability"]["location"], inline=True)
         embed.add_field(name="Rarity", value=resp.json()["availability"]["rarity"], inline=True)
         embed.add_field(name="Price", value=resp.json()["price"], inline=True)
+        embed.add_field(name="Price (Flick)", value=resp.json()["price-flick"], inline=True)
+
 
         if not resp.json()["availability"]["isAllYear"]:
             embed.add_field(name="Northern Hemisphere months", value=resp.json()["availability"]["month-northern"], inline=True)
@@ -85,7 +86,7 @@ def getBugEmbed(id):
         else:
             embed.add_field(name="Times", value="All Day", inline=True)
 
-        embed.add_field(name="Price (Flick)", value=resp.json()["price-flick"], inline=True)
+        embed.add_field(name="Location", value=resp.json()["availability"]["location"], inline=True)
         embed.add_field(name="Catchphrase", value=resp.json()["catch-phrase"], inline=True)
         embed.add_field(name="Museum phrase", value=resp.json()["museum-phrase"], inline=False)
 
