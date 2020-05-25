@@ -35,33 +35,54 @@ class ACNH(commands.Cog):
         import requests
         import json
 
+        searchTerm = " ".join(args[:]).strip()
+
+        if not searchTerm:
+            await ctx.send(f"This command requires parameters. See correct usages below.\n`!acnh-villager Roald` or `!acnh-fish Ketchup`")
+            raise Exception("User passed no parameters")
+
         resp = requests.get('http://acnhapi.com/v1/villagers')
 
         if resp.ok:
             result = resp.json()
-            searchTerm = " ".join(args[:]).strip()
 
+            found = False
             for villager in result.values():
                 if villager["name"]["name-USen"].lower() == searchTerm.lower():
+                    found = True
                     embed = getVillagerEmbed(villager["id"])
                     await ctx.send(embed=embed)
 
+            if not found:
+                await ctx.send("Villager not found. Please check your spelling.")
+
+
 
     @commands.command(name='acnh-fish', help='Returns fish from name')
-    async def getVillager(self, ctx, *args):
+    async def getFish(self, ctx, *args):
         import requests
         import json
 
+        searchTerm = " ".join(args[:]).strip()
+
+        if not searchTerm:
+            await ctx.send(f"This command requires parameters. See correct usages below.\n`!acnh-fish bitterling` or `!acnh-fish sea bass`")
+            raise Exception("User passed no parameters")
+
         resp = requests.get('http://acnhapi.com/v1/fish')
 
+        found = False
         if resp.ok:
             result = resp.json()
-            searchTerm = " ".join(args[:]).strip()
 
             for fish in result.values():
                 if fish["name"]["name-USen"].lower() == searchTerm.lower():
+                    found = True
                     embed = getFishEmbed(fish["id"])
                     await ctx.send(embed=embed)
+
+            if not found:
+                await ctx.send("Fish not found. Please check your spelling.")
 
 
 def getVillagerEmbed(id):
@@ -80,13 +101,14 @@ def getVillagerEmbed(id):
 
         embed = discord.Embed(title=name, color=0xA7D2A4)
         embed.set_thumbnail(url=image)
-        embed.add_field(name="Personality", value=personality, inline=False)
-        embed.add_field(name="Birthday", value=birthdayString, inline=True)
+        embed.add_field(name="Personality", value=personality, inline=True)
         embed.add_field(name="Species", value=species, inline=True)
         embed.add_field(name="Gender", value=gender, inline=True)
-        embed.add_field(name="Catchphrase", value=catchphrase, inline=True)
+        embed.add_field(name="Birthday", value=birthdayString, inline=True)
+        embed.add_field(name="Catchphrase", value=catchphrase, inline=False)
 
         return embed
+
 
 def getFishEmbed(id):
     import requests
