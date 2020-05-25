@@ -25,6 +25,10 @@ class ACNH(commands.Cog):
                 if villager["birthday"] == date:
                     birthdays.append(villager["id"])
 
+            if not birthdays:
+                await ctx.send("No villagers have birthdays today.")
+
+
             for villager in birthdays:
                 embed = getVillagerEmbed(villager)
                 await ctx.send(embed=embed)
