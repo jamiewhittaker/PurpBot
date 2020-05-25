@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import requests
 import json
-import helper.ac_helper as ac
+import helpers.ac_helper as ac
 
 class ACNH(commands.Cog):
     def __init__(self, bot):
