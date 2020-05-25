@@ -107,8 +107,9 @@ class ACNH(commands.Cog):
     async def getFossil(self, ctx, *args):
         searchTerm = " ".join(args[:]).strip()
 
+
         if not searchTerm:
-            await ctx.send(f"This command requires parameters. See correct usages below.\n`!acnh-fossil amber` or `!acnh-bug diplo skull`")
+            await ctx.send(f"This command requires parameters. See correct usages below.\n`!acnh-fossil amber` or `!acnh-fossil diplo skull`")
             raise Exception("User passed no parameters")
 
         embed = getFossilEmbed(searchTerm)
@@ -117,6 +118,31 @@ class ACNH(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send("Fossil not found. Please check your spelling.")
+
+
+    @commands.command(name='acnh-music', help='Returns KK Slider music item from name')
+    async def getMusic(self, ctx, *args):
+        searchTerm = " ".join(args[:]).strip()
+        if not searchTerm:
+            await ctx.send(f"This command requires parameters. See correct usages below.\n`!acnh-music Agent K.K.` or `!acnh-music K.K. Metal`")
+            raise Exception("User passed no parameters")
+
+        resp = requests.get('http://acnhapi.com/v1/songs')
+
+        if resp.ok:
+            result = resp.json()
+            found = False
+
+            for song in result.values():
+                if song["name"]["name-USen"].lower() == searchTerm.lower():
+                    found = True
+                    embed = getSongEmbed(song["id"])
+                    await ctx.send(embed=embed)
+
+            if not found:
+                await ctx.send("Song not found. Please check your spelling.")
+
+
 
 
 def getVillagerEmbed(id):
@@ -131,6 +157,26 @@ def getVillagerEmbed(id):
         embed.add_field(name="Catchphrase", value=resp.json()["catch-phrase"], inline=False)
 
         return embed
+
+
+def getSongEmbed(id):
+    resp = requests.get('http://acnhapi.com/v1/songs/' + str(id))
+    if resp.ok:
+        embed = discord.Embed(title=resp.json()["name"]["name-USen"], color=0xA7D2A4)
+        embed.set_thumbnail(url=resp.json()["image_uri"])
+        embed.add_field(name="Buy Price", value=resp.json()["buy-price"], inline=True)
+        embed.add_field(name="Sell Price", value=resp.json()["sell-price"], inline=True)
+
+        if resp.json()["isOrderable"]:
+            embed.add_field(name="Orderable", value="Yes", inline=True)
+            embed.add_field(name="Orderable", value="No", inline=True)
+
+        name = resp.json()["name"]["name-USen"]
+        musicLink = resp.json()["music_uri"]
+        embed.add_field(name="Link to MP3", value=f"[{name}]({musicLink})")
+
+        return embed
+
 
 
 def getFishEmbed(id):
