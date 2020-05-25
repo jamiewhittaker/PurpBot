@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import requests
 import json
+import helper.ac_helper as ac
 
 class ACNH(commands.Cog):
     def __init__(self, bot):
@@ -10,6 +11,7 @@ class ACNH(commands.Cog):
 
     @commands.command(name='acnh-birthdays', help='Returns villagers with birthdays')
     async def getBirthdays(self, ctx):
+
         resp = requests.get('http://acnhapi.com/v1/villagers')
         if resp.ok:
             from datetime import datetime
@@ -26,7 +28,7 @@ class ACNH(commands.Cog):
                 await ctx.send("No villagers have birthdays today.")
 
             for villager in birthdays:
-                embed = getVillagerEmbed(villager)
+                embed = ac.getVillagerEmbed(villager)
                 await ctx.send(embed=embed)
 
 
@@ -46,7 +48,7 @@ class ACNH(commands.Cog):
             for villager in result.values():
                 if villager["name"]["name-USen"].lower() == searchTerm.lower():
                     found = True
-                    embed = getVillagerEmbed(villager["id"])
+                    embed = ac.getVillagerEmbed(villager["id"])
                     await ctx.send(embed=embed)
 
             if not found:
@@ -71,7 +73,7 @@ class ACNH(commands.Cog):
             for fish in result.values():
                 if fish["name"]["name-USen"].lower() == searchTerm.lower():
                     found = True
-                    embed = getFishEmbed(fish["id"])
+                    embed = ac.getFishEmbed(fish["id"])
                     await ctx.send(embed=embed)
 
             if not found:
@@ -95,7 +97,7 @@ class ACNH(commands.Cog):
             for bug in result.values():
                 if bug["name"]["name-USen"].lower() == searchTerm.lower():
                     found = True
-                    embed = getBugEmbed(bug["id"])
+                    embed = ac.getBugEmbed(bug["id"])
                     await ctx.send(embed=embed)
 
             if not found:
@@ -112,7 +114,7 @@ class ACNH(commands.Cog):
             await ctx.send(f"This command requires parameters. See correct usages below.\n`!acnh-fossil amber` or `!acnh-fossil diplo skull`")
             raise Exception("User passed no parameters")
 
-        embed = getFossilEmbed(searchTerm)
+        embed = ac.getFossilEmbed(searchTerm)
         if embed:
             found = True
             await ctx.send(embed=embed)
@@ -136,113 +138,11 @@ class ACNH(commands.Cog):
             for song in result.values():
                 if song["name"]["name-USen"].lower() == searchTerm.lower():
                     found = True
-                    embed = getSongEmbed(song["id"])
+                    embed = ac.getSongEmbed(song["id"])
                     await ctx.send(embed=embed)
 
             if not found:
                 await ctx.send("Song not found. Please check your spelling.")
-
-
-
-
-def getVillagerEmbed(id):
-    resp = requests.get('http://acnhapi.com/v1/villagers/' + str(id))
-    if resp.ok:
-        embed = discord.Embed(title=resp.json()["name"]["name-USen"], color=0xA7D2A4)
-        embed.set_thumbnail(url=resp.json()["image_uri"])
-        embed.add_field(name="Personality", value=resp.json()["personality"], inline=True)
-        embed.add_field(name="Species", value=resp.json()["species"], inline=True)
-        embed.add_field(name="Gender", value=resp.json()["gender"], inline=True)
-        embed.add_field(name="Birthday", value=resp.json()["birthday-string"], inline=True)
-        embed.add_field(name="Catchphrase", value=resp.json()["catch-phrase"], inline=False)
-
-        return embed
-
-
-def getSongEmbed(id):
-    resp = requests.get('http://acnhapi.com/v1/songs/' + str(id))
-    if resp.ok:
-        embed = discord.Embed(title=resp.json()["name"]["name-USen"], color=0xA7D2A4)
-        embed.set_thumbnail(url=resp.json()["image_uri"])
-        embed.add_field(name="Buy Price", value=resp.json()["buy-price"], inline=True)
-        embed.add_field(name="Sell Price", value=resp.json()["sell-price"], inline=True)
-
-        if resp.json()["isOrderable"]:
-            embed.add_field(name="Orderable", value="Yes", inline=True)
-            embed.add_field(name="Orderable", value="No", inline=True)
-
-        name = resp.json()["name"]["name-USen"]
-        musicLink = resp.json()["music_uri"]
-        embed.add_field(name="Link to MP3", value=f"[{name}]({musicLink})")
-
-        return embed
-
-
-
-def getFishEmbed(id):
-    resp = requests.get('http://acnhapi.com/v1/fish/' + str(id))
-    if resp.ok:
-        embed = discord.Embed(title=resp.json()["name"]["name-USen"], color=0xA7D2A4)
-        embed.set_thumbnail(url=resp.json()["icon_uri"])
-
-        embed.add_field(name="Location", value=resp.json()["availability"]["location"], inline=True)
-        embed.add_field(name="Rarity", value=resp.json()["availability"]["rarity"], inline=True)
-        embed.add_field(name="Price", value=resp.json()["price"], inline=True)
-
-        if not resp.json()["availability"]["isAllYear"]:
-            embed.add_field(name="Northern Hemisphere months", value=resp.json()["availability"]["month-northern"], inline=True)
-            embed.add_field(name="Southern Hemisphere months", value=resp.json()["availability"]["month-southern"], inline=True)
-        else:
-            embed.add_field(name="Availability", value="All Year", inline=True)
-
-        if not resp.json()["availability"]["isAllDay"]:
-            embed.add_field(name="Times", value=resp.json()["availability"]["time"], inline=True)
-        else:
-            embed.add_field(name="Times", value="All Day", inline=True)
-
-        embed.add_field(name="Price (C.J.)", value=resp.json()["price-cj"], inline=True)
-        embed.add_field(name="Catchphrase", value=resp.json()["catch-phrase"], inline=True)
-        embed.add_field(name="Museum phrase", value=resp.json()["museum-phrase"], inline=False)
-
-        return embed
-
-
-def getBugEmbed(id):
-    resp = requests.get('http://acnhapi.com/v1/bugs/' + str(id))
-    if resp.ok:
-        embed = discord.Embed(title=resp.json()["name"]["name-USen"], color=0xA7D2A4)
-        embed.set_thumbnail(url=resp.json()["icon_uri"])
-
-        embed.add_field(name="Location", value=resp.json()["availability"]["location"], inline=True)
-        embed.add_field(name="Rarity", value=resp.json()["availability"]["rarity"], inline=True)
-        embed.add_field(name="Price", value=resp.json()["price"], inline=True)
-
-        if not resp.json()["availability"]["isAllYear"]:
-            embed.add_field(name="Northern Hemisphere months", value=resp.json()["availability"]["month-northern"], inline=True)
-            embed.add_field(name="Southern Hemisphere months", value=resp.json()["availability"]["month-southern"], inline=True)
-        else:
-            embed.add_field(name="Availability", value="All Year", inline=True)
-
-        if not resp.json()["availability"]["isAllDay"]:
-            embed.add_field(name="Times", value=resp.json()["availability"]["time"], inline=True)
-        else:
-            embed.add_field(name="Times", value="All Day", inline=True)
-
-        embed.add_field(name="Price (Flick)", value=resp.json()["price-flick"], inline=True)
-        embed.add_field(name="Catchphrase", value=resp.json()["catch-phrase"], inline=True)
-        embed.add_field(name="Museum phrase", value=resp.json()["museum-phrase"], inline=False)
-
-        return embed
-
-
-def getFossilEmbed(name):
-    resp = requests.get('http://acnhapi.com/v1/fossils/' + name.replace(" ", "_").lower())
-    if resp.ok:
-        embed = discord.Embed(title=resp.json()["name"]["name-USen"], color=0xA7D2A4)
-        embed.set_thumbnail(url=resp.json()["image_uri"])
-        embed.add_field(name="Price", value=resp.json()["price"], inline=True)
-        embed.add_field(name="Museum phrase", value=resp.json()["museum-phrase"], inline=False)
-        return embed
 
 def setup(bot):
     bot.add_cog(ACNH(bot))
