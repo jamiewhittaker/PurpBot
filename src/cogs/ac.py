@@ -112,7 +112,6 @@ class ACNH(commands.Cog):
             raise Exception("User passed no parameters")
 
         embed = getFossilEmbed(searchTerm)
-        print(embed)
         if embed:
             found = True
             await ctx.send(embed=embed)
