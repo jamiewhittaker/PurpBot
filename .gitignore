@@ -3,3 +3,5 @@ src/err.log
 .env
 *.pyc
 src/quotes.txt
+src/.DS_Store
+.DS_Store
