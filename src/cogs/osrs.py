@@ -28,29 +28,17 @@ class OSRS(commands.Cog):
         resp = requests.get('http://services.runescape.com/m=itemdb_oldschool/api/catalogue/detail.json?item=' + str(itemID))
 
         if resp.ok:
-            itemName = resp.json()["item"]["name"]
-            itemDesciption = resp.json()["item"]["description"]
-            currentPrice = resp.json()["item"]["current"]["price"]
-            icon = resp.json()["item"]["icon_large"]
-
             resp2 = requests.get("https://api.osrsbox.com/items?where={%22id%22:%22" + str(itemID) + "%22}")
 
+            embed = discord.Embed(title=resp.json()["item"]["name"], color=0xC0A886)
+            embed.set_thumbnail(url=resp.json()["item"]["icon_large"])
+            embed.add_field(name="Description", value=resp.json()["item"]["description"], inline=False)
+            embed.add_field(name="Current price", value=resp.json()["item"]["current"]["price"], inline=True)
+
             if resp2.ok:
-                lowAlch = resp2.json()["_items"][0]["lowalch"]
-                highAlch = resp2.json()["_items"][0]["highalch"]
-                buyLimit = resp2.json()["_items"][0]["buy_limit"]
-            else:
-                lowAlch, highAlch, buyLimit = "N/A"
-
-            embed = discord.Embed(title=itemName, color=0xC0A886)
-            embed.set_thumbnail(url=icon)
-            embed.add_field(name="Description", value=itemDesciption, inline=False)
-            embed.add_field(name="Current price", value=currentPrice, inline=True)
-            embed.add_field(name="Low alch value", value=lowAlch, inline=True)
-            embed.add_field(name="High alch value", value=highAlch, inline=True)
-            embed.add_field(name="Buy limit", value=buyLimit, inline=True)
-
-
+                embed.add_field(name="Low alch value", value=resp2.json()["_items"][0]["lowalch"], inline=True)
+                embed.add_field(name="High alch value", value=resp2.json()["_items"][0]["highalch"], inline=True)
+                embed.add_field(name="Buy limit", value=resp2.json()["_items"][0]["buy_limit"], inline=True)
 
             await ctx.send(embed=embed)
         else:
