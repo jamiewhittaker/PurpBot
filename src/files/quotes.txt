@@ -1,0 +1,1 @@
+Insert a new quote on each line of this file for the !quote command.
