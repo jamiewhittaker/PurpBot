@@ -6,12 +6,12 @@ class Fun(commands.Cog):
         self.bot = bot
 
     #Quotes are fetched from each line of the .txt file and a random line is sent.
-    @commands.command(name='quote', help='Responds with one of Liam\'s timeless quotes')
-    async def get_liamism(self, ctx):
+    @commands.command(name='quote', help='Responds with a quote')
+    async def get_quote(self, ctx):
         import random
-        with open('quotes.txt') as f:
+        with open('files/quotes.txt') as f:
             lines = f.readlines()
-            response = random.choice(lines) + ' <:sexy:713081212503195821>'
+            response = random.choice(lines)
             await ctx.send(response)
 
 
