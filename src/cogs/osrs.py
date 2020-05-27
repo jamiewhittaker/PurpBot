@@ -110,7 +110,7 @@ class OSRS(commands.Cog):
                     level = skill_info["Level"]
                     rank = skill_info["Rank"]
                     experience = skill_info["Experience"]
-                    output = output + f"\n**{skill_name}**: {level} [{experience} XP]"
+                    output += f"\n**{skill_name}**: {level} [{experience} XP]"
                 embed.add_field(name=f"{username}", value=output, inline=True)
 
         if len(usernames) == 1:
@@ -262,17 +262,19 @@ def getOSRS(username):
 
 
 def getItemID(searchTerm):
+    import requests
     import json
 
-    with open('items-summary.json') as f:
-        data = json.load(f)
+    resp = requests.get('https://www.osrsbox.com/osrsbox-db/items-summary.json')
 
-    for item in data.values():
-        if item["name"].lower() == searchTerm.lower():
-            return item["id"]
+    if resp.ok:
+        result = resp.json()
+
+        for item in result.values():
+            if item["name"].lower() == searchTerm.lower():
+                return item["id"]
 
     return False
-
 
 
 def setup(bot):
