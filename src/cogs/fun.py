@@ -33,7 +33,7 @@ class Fun(commands.Cog):
         import random
 
         oneString = ""
-        for x in range(0, 14):
+        for _ in range(0, 14):
             randomNum = random.randint(1, 100)
 
             if randomNum <= 65:
@@ -61,12 +61,12 @@ class Fun(commands.Cog):
         randomString = random.randint(1, 100)
 
         if randomString <= 90:
-            for x in range(0, 5):
+            for _ in range(0, 5):
                 output = output + emptyString
             output = output + oneString
 
         if randomString > 90:
-            for x in range(0, 4):
+            for _ in range(0, 4):
                 output = output + emptyString
             output = output + oneString
             output = output + f"\n{emptyString}"
