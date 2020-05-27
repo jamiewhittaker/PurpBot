@@ -5,6 +5,63 @@ class OSRS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(name='osrs-xpto99', help='Returns the XP needed to get a skill to 99')
+    async def getXPto99(self, ctx, *args):
+
+        parameters = " ".join(args[:]).split(",")
+        usernames = []
+        for parameter in parameters:
+            usernames.append(parameter.strip())
+
+        if not usernames[0]:
+            await ctx.send(f"This command requires parameters. See correct usages below.\n`!osrs-xpto99 Zezima` or `!osrs-xpto99 Zezima, Lynx Titan`")
+            raise Exception("User passed no parameters")
+
+        if len(usernames) > 2:
+            await ctx.send("This command currently only accepts two parameters.")
+            raise Exception("User tried to use more than two parameters")
+
+        for username in usernames:
+            if getOSRS(username) == False:
+                await ctx.send(f"Could not find {username} in the Hi-Scores")
+                raise Exception("User searched for invalid username")
+
+
+        def getOutput(username):
+            skills = getOSRS(username)
+
+            if skills:
+                output = ""
+                for skill_name, skill_info in skills.items():
+                    level = skill_info["Level"]
+
+                    if skill_name == "Overall":
+                        output += f"\n**{skill_name}**: {level}"
+                    else:
+                        if int(skill_info["Experience"]) > 13034431:
+                            output += f"\n**{skill_name}**: {level} [Already 99]"
+                        else:
+                            experience = 13034431 - int(skill_info["Experience"])
+                            experience = f"{int(experience):,d}"
+                            output += f"\n**{skill_name}**: {level} [{experience} XP]"
+
+
+                embed.add_field(name=f"{username}", value=output, inline=True)
+
+
+        if len(usernames) == 1:
+            embed = discord.Embed(title=f"Stats for {usernames[0]}", description="Stats fetched from OSRS Hi-Scores.", color=0xC0A886)
+            getOutput(usernames[0])
+
+        if len(usernames) == 2:
+            embed = discord.Embed(title=f"Stats for {usernames[0]} and {usernames[1]}", description="Stats fetched from OSRS Hi-Scores.", color=0xC0A886)
+            getOutput(usernames[0])
+            getOutput(usernames[1])
+
+        embed.set_thumbnail(url="https://lh3.googleusercontent.com/5Dj_vzUhLURKE7dnDElvo9lbgzaMynzT0tyyvStQUt3pSZ8Ub0jzsa05oVy4EtHjEq8=s180-rw")
+        await ctx.send(embed=embed)
+
+        
 
     @commands.command(name='osrs-itemID', help='Returns the Item ID for the item searched')
     async def getOSRSItemID(self, ctx, *args):
@@ -110,6 +167,7 @@ class OSRS(commands.Cog):
                     level = skill_info["Level"]
                     rank = skill_info["Rank"]
                     experience = skill_info["Experience"]
+                    experience = f"{int(experience):,d}"
                     output += f"\n**{skill_name}**: {level} [{experience} XP]"
                 embed.add_field(name=f"{username}", value=output, inline=True)
 
@@ -275,6 +333,7 @@ def getItemID(searchTerm):
                 return item["id"]
 
     return False
+
 
 
 def setup(bot):
